@@ -43,4 +43,60 @@ router.post('/users/login', (req, res, next) => {
   })(req, res, next);
 });
 
+// Fetch and update user's details
+router.route('/user')
+  .get(auth.required, (req, res, next) => {
+    User.findById(req.payload.id)
+      .then(user => {
+        if (!user) {
+          return res.sendStatus(401);
+        }
+        return res.json({ user: user.toAuthJSON() });
+      })
+      .catch(next);
+  })
+  .put(auth.required, (req, res, next) => {
+    User.findById(req.payload.id)
+      .then(user => {
+        if (!user) {
+          return res.sendStatus(401);
+        }
+
+        const {
+          username,
+          email,
+          bio,
+          image,
+          password
+        } = req.body.user;
+
+        // Only update changed fields
+        if (typeof username !== 'undefined') {
+          user.username = username;
+        }
+
+        if (typeof email !== 'undefined') {
+          user.email = email;
+        }
+
+        if (typeof bio !== 'undefined') {
+          user.bio = bio;
+        }
+
+        if (typeof image !== 'undefined') {
+          user.image = image;
+        }
+
+        if (typeof password !== 'undefined') {
+          user.setPassword(password);
+        }
+
+        return user.save()
+          .then(() => {
+            return res.json({ user: user.toAuthJSON() });
+          });
+      })
+      .catch(next);
+  });
+
 module.exports = router;
