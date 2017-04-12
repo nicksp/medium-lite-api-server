@@ -17,9 +17,11 @@ router.post('/users', (req, res, next) => {
   user.save()
     .then(() => {
       return res.json({ user: user.toAuthJSON() });
-    }).catch(next);
+    })
+    .catch(next);
 });
 
+// User login
 router.post('/users/login', (req, res, next) => {
   if (!req.boby.user.email) {
     return res.status(422).json({ errors: { email: 'can\'t be blank' }});
