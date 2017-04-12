@@ -20,4 +20,27 @@ router.post('/users', (req, res, next) => {
     }).catch(next);
 });
 
+router.post('/users/login', (req, res, next) => {
+  if (!req.boby.user.email) {
+    return res.status(422).json({ errors: { email: 'can\'t be blank' }});
+  }
+
+  if (!req.boby.user.password) {
+    return res.status(422).json({ errors: { password: 'can\'t be blank' }});
+  }
+
+  passport.authenticate('local', { session: false }, (err, user, info) => {
+    if (err) {
+      return next(err);
+    }
+
+    if (user) {
+      user.token = user.generateJwt();
+      return res.json({ user: user.toAuthJSON() });
+    } else {
+      return res.status(422).json(info);
+    }
+  })(req, res, next);
+});
+
 module.exports = router;
