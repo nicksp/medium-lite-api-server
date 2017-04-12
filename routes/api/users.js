@@ -23,11 +23,11 @@ router.post('/users', (req, res, next) => {
 
 // User login
 router.post('/users/login', (req, res, next) => {
-  if (!req.boby.user.email) {
+  if (!req.body.user.email) {
     return res.status(422).json({ errors: { email: 'can\'t be blank' }});
   }
 
-  if (!req.boby.user.password) {
+  if (!req.body.user.password) {
     return res.status(422).json({ errors: { password: 'can\'t be blank' }});
   }
 
