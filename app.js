@@ -1,23 +1,17 @@
-const fs = require('fs'),
-const http = require('http'),
-const path = require('path'),
-const methods = require('methods'),
-const express = require('express'),
-const bodyParser = require('body-parser'),
+const fs = require('fs');
+const http = require('http');
+const path = require('path');
+const methods = require('methods');
+const express = require('express');
+const bodyParser = require('body-parser');
 const morgan = require('morgan');
-const session = require('express-session'),
-const cors = require('cors'),
-const passport = require('passport'),
-const errorhandler = require('errorhandler'),
+const session = require('express-session');
+const cors = require('cors');
+const passport = require('passport');
+const errorhandler = require('errorhandler');
 const mongoose = require('mongoose');
 
 const isProduction = process.env.NODE_ENV === 'production';
-
-// Models
-require('./models/User');
-
-// Services
-require('./services/passport');
 
 // Create global app object
 const app = express();
@@ -53,12 +47,12 @@ if (!isProduction) {
 
 // DB connection handlers
 db.on('error', (error) => {
-  console.error('mongoose connection: ERROR');
+  console.error('Mongoose connection: ERROR');
   throw new Error(error);
 });
 
 db.on('open', () => {
-  console.error('mongoose connection: OPEN');
+  console.error('Mongoose connection: OPEN');
 });
 
 // Connect to our database
@@ -68,6 +62,12 @@ if (isProduction) {
   mongoose.connect('mongodb://localhost/ledium');
   mongoose.set('debug', true);
 }
+
+// Models
+require('./models/User');
+
+// Services
+require('./services/passport');
 
 // App routes
 app.use(require('./routes'));
