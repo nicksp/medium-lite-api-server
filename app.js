@@ -16,6 +16,9 @@ const isProduction = process.env.NODE_ENV === 'production';
 // Models
 require('./models/User');
 
+// Services
+require('./services/passport');
+
 // Create global app object
 const app = express();
 const db = mongoose.connection;

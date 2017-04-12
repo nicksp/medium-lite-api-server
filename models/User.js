@@ -60,7 +60,7 @@ UserSchema.methods.generateJwt = function () {
     id: this._id,
     username: this.username,
     expiresAt: parseInt(expiresAt.getTime() / 1000)
-  }, secret);
+  }, appSecret);
 };
 
 /**
