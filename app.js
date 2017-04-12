@@ -13,12 +13,6 @@ const mongoose = require('mongoose');
 
 const isProduction = process.env.NODE_ENV === 'production';
 
-// Models
-require('./models/User');
-
-// Services
-require('./services/passport');
-
 // Create global app object
 const app = express();
 const db = mongoose.connection;
@@ -53,12 +47,12 @@ if (!isProduction) {
 
 // DB connection handlers
 db.on('error', (error) => {
-  console.error('mongoose connection: ERROR');
+  console.error('Mongoose connection: ERROR');
   throw new Error(error);
 });
 
 db.on('open', () => {
-  console.error('mongoose connection: OPEN');
+  console.error('Mongoose connection: OPEN');
 });
 
 // Connect to our database
@@ -68,6 +62,12 @@ if (isProduction) {
   mongoose.connect('mongodb://localhost/ledium');
   mongoose.set('debug', true);
 }
+
+// Models
+require('./models/User');
+
+// Services
+require('./services/passport');
 
 // App routes
 app.use(require('./routes'));
