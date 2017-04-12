@@ -1,14 +1,14 @@
-const fs = require('fs'),
-const http = require('http'),
-const path = require('path'),
-const methods = require('methods'),
-const express = require('express'),
-const bodyParser = require('body-parser'),
+const fs = require('fs');
+const http = require('http');
+const path = require('path');
+const methods = require('methods');
+const express = require('express');
+const bodyParser = require('body-parser');
 const morgan = require('morgan');
-const session = require('express-session'),
-const cors = require('cors'),
-const passport = require('passport'),
-const errorhandler = require('errorhandler'),
+const session = require('express-session');
+const cors = require('cors');
+const passport = require('passport');
+const errorhandler = require('errorhandler');
 const mongoose = require('mongoose');
 
 const isProduction = process.env.NODE_ENV === 'production';
