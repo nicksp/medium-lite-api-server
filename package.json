@@ -1,0 +1,36 @@
+{
+  "name": "medium-lite-api-server",
+  "version": "1.0.0",
+  "description": "Medium Lite Node.js API server",
+  "main": "app.js",
+  "scripts": {
+    "start": "node ./app.js",
+    "dev": "nodemon ./app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nicksp/medium-lite-api-server"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.17.1",
+    "cors": "^2.8.3",
+    "dotenv": "^4.0.0",
+    "ejs": "^2.5.6",
+    "errorhandler": "^1.5.0",
+    "express": "^4.15.2",
+    "express-jwt": "^5.1.0",
+    "express-session": "^1.15.2",
+    "jsonwebtoken": "^7.3.0",
+    "method-override": "^2.3.8",
+    "methods": "1.1.2",
+    "mongoose": "^4.9.4",
+    "mongoose-unique-validator": "^1.0.5",
+    "morgan": "^1.8.1",
+    "passport": "0.3.2",
+    "passport-local": "1.0.0",
+    "request": "^2.81.0",
+    "slug": "0.9.1",
+    "underscore": "1.8.3"
+  }
+}
