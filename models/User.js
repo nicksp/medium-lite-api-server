@@ -74,4 +74,16 @@ UserSchema.methods.toAuthJSON = function () {
   };
 };
 
+/**
+ * Return public profile data
+ */
+UserSchema.methods.getPublicProfile = function (user) {
+  return {
+    username: this.username,
+    bio: this.bio,
+    image: this.image || 'http://static.domainname.com/images/anon.png',
+    following: false
+  }
+};
+
 mongoose.model('User', UserSchema);
