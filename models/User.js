@@ -22,6 +22,7 @@ const UserSchema = new mongoose.Schema({
     match: [/\S+@\S+\.\S+/, 'is invalid'],
     index: true
   },
+  favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Article' }],
   bio: String,
   image: String,
   hash: String,
@@ -84,6 +85,32 @@ UserSchema.methods.getPublicProfile = function (user) {
     image: this.image || 'http://static.domainname.com/images/anon.png',
     following: false
   }
+};
+
+/**
+ * Favorite an article.
+ */
+UserSchema.methods.favoriteArticle = function (id) {
+  if (this.favorites.indexOf(id) === -1) {
+    this.favorites.push(id);
+  }
+
+  return this.save();
+};
+
+/**
+ * Unfavorite an article.
+ */
+UserSchema.methods.unfavoriteArticle = function (id) {
+  this.favorites.remove(id);
+  return this.save();
+};
+
+/**
+ * Check wheather or not we've favorited an article.
+ */
+UserSchema.methods.isFavorite = function (id) {
+  return this.favorites.some(favId => favId.toString() === id.toString());
 };
 
 mongoose.model('User', UserSchema);

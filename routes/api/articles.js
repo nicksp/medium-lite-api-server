@@ -97,4 +97,46 @@ router.delete('/:article', auth.required, (req, res, next) => {
     });
 });
 
+// Favorite an article
+router.post('/:article/favorite', auth.required, (req, res, next) => {
+  const articleId = req.article._id;
+
+  User.findById(req.payload.id)
+    .then(user => {
+      if (!user) {
+        return res.sendStatus(401);
+      }
+
+      return user.favoriteArticle(articleId)
+        .then(() => {
+          return req.article.setFavoritesCount()
+            .then(article => {
+              return res.json({ article: article.toPublicJSON(user) });
+            });
+        });
+    })
+    .catch(next);
+});
+
+// Unfavorite an article
+router.delete('/:article/favorite', auth.required, (req, res, next) => {
+  const articleId = req.article._id;
+
+  User.findById(req.payload.id)
+    .then(user => {
+      if (!user) {
+        return res.sendStatus(401);
+      }
+
+      return user.unfavoriteArticle(articleId)
+        .then(() => {
+          return req.article.setFavoritesCount()
+            .then(article => {
+              return res.json({ article: article.toPublicJSON(user) });
+            });
+        });
+    })
+    .catch(next);
+});
+
 module.exports = router;
