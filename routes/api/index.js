@@ -2,6 +2,7 @@ const router = require('express').Router();
 
 router.use('/', require('./users'));
 router.use('/profiles', require('./profiles'));
+router.use('/articles', require('./articles'));
 
 // Middleware function for our API router to handle validation errors from Mongoose
 router.use((err, req, res, next) => {
