@@ -4,22 +4,26 @@ const router = require('express').Router();
 
 const User = mongoose.model('User');
 const Article = mongoose.model('Article');
+
 const auth = require('../auth');
 
+// Preload article objects on routes with ':article'
 router.param('article', (req, res, next, slug) => {
   Article.findOne({ slug })
     .populate('author')
     .then(article => {
       if (!article) {
-        res.sendStatus(404);
+        return res.sendStatus(404);
       }
 
       req.article = article;
+
       return next();
     })
     .catch(next);
 });
 
+// Create new article
 router.post('/', auth.required, (req, res, next) => {
   User.findById(req.payload.id)
     .then(user => {
@@ -32,14 +36,12 @@ router.post('/', auth.required, (req, res, next) => {
       article.author = user;
 
       return article.save()
-        .then(() => {
-          console.log(article.author);
-          return res.json({ article: article.toPublicJSON(user) });
-        });
+        .then(() => res.json({ article: article.toPublicJSON(user) }));
     })
     .catch(next);
 });
 
+// Return a given article
 router.get('/:article', auth.optional, (req, res, next) => {
   Promise.all([
     req.payload ? User.findById(req.payload.id) : null,
@@ -52,10 +54,11 @@ router.get('/:article', auth.optional, (req, res, next) => {
   .catch(next);
 });
 
+// Update an article
 router.put('/:article', auth.required, (req, res, next) => {
   User.findById(req.payload.id)
     .then(user => {
-      // if we're the author of the updating article
+      // If we're the author of the updating article
       if (req.article.author._id.toString() === req.payload.id.toString()) {
         const { title, body, description } = req.body.article;
 
@@ -72,9 +75,7 @@ router.put('/:article', auth.required, (req, res, next) => {
         }
 
         req.article.save()
-          .then(article => {
-            return res.json({ article: article.toPublicJSON(user) });
-          })
+          .then(article => res.json({ article: article.toPublicJSON(user) }))
           .catch(next);
       } else {
         return res.sendStatus(403);
@@ -82,19 +83,60 @@ router.put('/:article', auth.required, (req, res, next) => {
     });
 });
 
+// Remove article
 router.delete('/:article', auth.required, (req, res, next) => {
   User.findById(req.payload.id)
     .then(() => {
-      // if we're the author of the article we're about to remove
+      // If we're the author of the article we're about to remove
       if (req.article.author._id.toString() === req.payload.id.toString()) {
         return req.article.remove()
-          .then(() => {
-            return res.sendStatus(204);
-          });
+          .then(() => res.sendStatus(204));
       } else {
         return res.sendStatus(403);
       }
     });
+});
+
+// Favorite an article
+router.post('/:article/favorite', auth.required, (req, res, next) => {
+  const articleId = req.article._id;
+
+  User.findById(req.payload.id)
+    .then(user => {
+      if (!user) {
+        return res.sendStatus(401);
+      }
+
+      return user.favoriteArticle(articleId)
+        .then(() => {
+          return req.article.setFavoritesCount()
+            .then(article => {
+              return res.json({ article: article.toPublicJSON(user) });
+            });
+        });
+    })
+    .catch(next);
+});
+
+// Unfavorite an article
+router.delete('/:article/favorite', auth.required, (req, res, next) => {
+  const articleId = req.article._id;
+
+  User.findById(req.payload.id)
+    .then(user => {
+      if (!user) {
+        return res.sendStatus(401);
+      }
+
+      return user.unfavoriteArticle(articleId)
+        .then(() => {
+          return req.article.setFavoritesCount()
+            .then(article => {
+              return res.json({ article: article.toPublicJSON(user) });
+            });
+        });
+    })
+    .catch(next);
 });
 
 module.exports = router;

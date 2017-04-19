@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 const uniqueValidator = require('mongoose-unique-validator');
 const slug = require('slug');
 
+const User = mongoose.model('User');
+
 const ArticleSchema = new mongoose.Schema({
   slug: {
     type: String,
@@ -33,7 +35,7 @@ ArticleSchema.pre('validate', function(next){
  * Generate unique article slugs.
  */
 ArticleSchema.methods.slugify = function () {
-  this.slug = `${slug(this.title)}_${(Math.random() * Math.pow(36, 6) | 0).toString(36)}`;
+  this.slug = slug(this.title);
 };
 
 /**
@@ -48,9 +50,22 @@ ArticleSchema.methods.toPublicJSON = function (user) {
     createdAt: this.createdAt,
     updatedAt: this.updatedAt,
     tagList: this.tagList,
+    favorited: user ? user.isFavorite(this._id) : false,
     favoritesCount: this.favoritesCount,
     author: this.author.getPublicProfile(user)
   };
+};
+
+/**
+ * Update an article's favorites count.
+ */
+ArticleSchema.methods.setFavoritesCount = function () {
+  const article = this;
+  return User.count({ favorites: { $in: [article._id] }})
+    .then(count => {
+      article.favoritesCount = count;
+      return article.save();
+    });
 };
 
 mongoose.model('Article', ArticleSchema);
