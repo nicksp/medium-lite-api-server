@@ -66,6 +66,7 @@ if (isProduction) {
 // Models
 require('./models/User');
 require('./models/Article');
+require('./models/Comment');
 
 // Services
 require('./services/passport');
