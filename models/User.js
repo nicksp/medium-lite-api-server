@@ -23,6 +23,7 @@ const UserSchema = new mongoose.Schema({
     index: true
   },
   favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Article' }],
+  following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   bio: String,
   image: String,
   hash: String,
@@ -83,7 +84,7 @@ UserSchema.methods.getPublicProfile = function (user) {
     username: this.username,
     bio: this.bio,
     image: this.image || 'http://static.domainname.com/images/anon.png',
-    following: false
+    following: user ? user.isFollowing(this._id) : false
   }
 };
 
@@ -111,6 +112,32 @@ UserSchema.methods.unfavoriteArticle = function (id) {
  */
 UserSchema.methods.isFavorite = function (id) {
   return this.favorites.some(favId => favId.toString() === id.toString());
+};
+
+/**
+ * Follow another user.
+ */
+UserSchema.methods.follow = function (id) {
+  if (this.following.indexOf(id) === -1) {
+    this.following.push(id);
+  }
+
+  return this.save();
+};
+
+/**
+ * Unollow another user.
+ */
+UserSchema.methods.unfollow = function (id) {
+  this.following.remove(id);
+  return this.save();
+};
+
+/**
+ * Check wheather or not we're following another user.
+ */
+UserSchema.methods.isFollowing = function (id) {
+  return this.following.some(followId => followId.toString() === id.toString());
 };
 
 mongoose.model('User', UserSchema);
