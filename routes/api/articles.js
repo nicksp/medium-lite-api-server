@@ -39,6 +39,41 @@ router.param('comment', (req, res, next, id) => {
     .catch(next);
 });
 
+// List all articles
+router.get('/', auth.optional, (req, res, next) => {
+  const query = {};
+  const limit = 20;
+  const offset = 0;
+
+  if (typeof req.query.limit !== 'undefined') {
+    limit = req.query.limit;
+  }
+
+  if (typeof req.query.offset !== 'undefined') {
+    offset = req.query.offset;
+  }
+
+  return Promise.all([
+    Article.find(query)
+      .limit(Number(limit))
+      .skip(Number(offset))
+      .sort({ createdAt: 'desc' })
+      .populate('author')
+      .exec(),
+    Article.count(query).exec(),
+    req.payload ? User.findById(req.payload.id) : null,
+  ])
+  .then(results => {
+    const [ articles, articlesCount, user ] = results;
+
+    return res.json({
+      articles: articles.map(article => article.toPublicJSON(user)),
+      count: articlesCount
+    });
+  })
+  .catch(next);
+});
+
 // Create new article
 router.post('/', auth.required, (req, res, next) => {
   User.findById(req.payload.id)
