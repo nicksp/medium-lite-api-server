@@ -95,6 +95,45 @@ router.get('/', auth.optional, (req, res, next) => {
   .catch(next);
 });
 
+// Retriev articles authored by users being followed
+router.get('/feed', auth.required, (req, res, next) => {
+  const limit = 20;
+  const offset = 0;
+
+  if (typeof req.query.limit !== 'undefined') {
+    limit = req.query.limit;
+  }
+
+  if (typeof req.query.offset !== 'undefined') {
+    offset = req.query.offset;
+  }
+
+  User.findById(req.payload.id)
+    .then(user => {
+      if (!user) {
+        return res.sendStatus(401);
+      }
+
+      Promise.all([
+        Article.find({ author: { $in: user.following } })
+          .limit(Number(limit))
+          .skip(Number(offset))
+          .populate('author')
+          .exec(),
+        Article.count({ author: { $in: user.following } })
+      ])
+      .then(results => {
+        const [ articles, articlesCount ] = results;
+
+        return res.json({
+          articles: articles.map(article => article.toPublicJSON(user)),
+          count: articlesCount
+        });
+      })
+      .catch(next);
+    });
+});
+
 // Create new article
 router.post('/', auth.required, (req, res, next) => {
   User.findById(req.payload.id)
