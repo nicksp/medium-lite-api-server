@@ -39,6 +39,101 @@ router.param('comment', (req, res, next, id) => {
     .catch(next);
 });
 
+// List all articles
+router.get('/', auth.optional, (req, res, next) => {
+  const query = {};
+  const limit = 20;
+  const offset = 0;
+
+  if (typeof req.query.limit !== 'undefined') {
+    limit = req.query.limit;
+  }
+
+  if (typeof req.query.offset !== 'undefined') {
+    offset = req.query.offset;
+  }
+
+  if (typeof req.query.tag !== 'undefined') {
+    query.tagList = { $in: [req.query.tag] };
+  }
+
+  Promise.all([
+    req.query.author ? User.findOne({ username: req.query.author }) : null,
+    req.query.favorited ? User.findOne({ username: req.query.favorited }) : null
+  ]).then(results => {
+    const [ author, favoriter ] = results;
+
+    if (author) {
+      query.author = author._id;
+    }
+
+    if (favoriter) {
+      query._id = { $in: favoriter.favorites };
+    } else if (req.query.favorited) {
+      query._id = { $in: [] };
+    }
+
+    return Promise.all([
+      Article.find(query)
+        .limit(Number(limit))
+        .skip(Number(offset))
+        .sort({ createdAt: 'desc' })
+        .populate('author')
+        .exec(),
+      Article.count(query).exec(),
+      req.payload ? User.findById(req.payload.id) : null,
+    ])
+    .then(results => {
+      const [ articles, articlesCount, user ] = results;
+
+      return res.json({
+        articles: articles.map(article => article.toPublicJSON(user)),
+        count: articlesCount
+      });
+    });
+  })
+  .catch(next);
+});
+
+// Retriev articles authored by users being followed
+router.get('/feed', auth.required, (req, res, next) => {
+  const limit = 20;
+  const offset = 0;
+
+  if (typeof req.query.limit !== 'undefined') {
+    limit = req.query.limit;
+  }
+
+  if (typeof req.query.offset !== 'undefined') {
+    offset = req.query.offset;
+  }
+
+  User.findById(req.payload.id)
+    .then(user => {
+      if (!user) {
+        return res.sendStatus(401);
+      }
+
+      Promise.all([
+        Article.find({ author: { $in: user.following } })
+          .limit(Number(limit))
+          .skip(Number(offset))
+          .populate('author')
+          .exec(),
+        Article.count({ author: { $in: user.following } })
+      ])
+      .then(results => {
+        const [ articles, articlesCount ] = results;
+
+        return res.json({
+          articles: articles.map(article => article.toPublicJSON(user)),
+          count: articlesCount
+        });
+      })
+      .catch(next);
+    });
+});
+
 // Create new article
 router.post('/', auth.required, (req, res, next) => {
   User.findById(req.payload.id)

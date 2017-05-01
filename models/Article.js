@@ -19,10 +19,7 @@ const ArticleSchema = new mongoose.Schema({
   },
   comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
   tagList: [{ type: String }],
-  author: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
-  }
+  author: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
 }, { timestamps: true });
 
 ArticleSchema.plugin(uniqueValidator, { message: 'is already taken.' });
