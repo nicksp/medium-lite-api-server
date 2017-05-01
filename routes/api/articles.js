@@ -57,22 +57,39 @@ router.get('/', auth.optional, (req, res, next) => {
     query.tagList = { $in: [req.query.tag] };
   }
 
-  return Promise.all([
-    Article.find(query)
-      .limit(Number(limit))
-      .skip(Number(offset))
-      .sort({ createdAt: 'desc' })
-      .populate('author')
-      .exec(),
-    Article.count(query).exec(),
-    req.payload ? User.findById(req.payload.id) : null,
-  ])
-  .then(results => {
-    const [ articles, articlesCount, user ] = results;
+  Promise.all([
+    req.query.author ? User.findOne({ username: req.query.author }) : null,
+    req.query.favorited ? User.findOne({ username: req.query.favorited }) : null
+  ]).then(results => {
+    const [ author, favoriter ] = results;
 
-    return res.json({
-      articles: articles.map(article => article.toPublicJSON(user)),
-      count: articlesCount
+    if (author) {
+      query.author = author._id;
+    }
+
+    if (favoriter) {
+      query._id = { $in: favoriter.favorites };
+    } else if (req.query.favorited) {
+      query._id = { $in: [] };
+    }
+
+    return Promise.all([
+      Article.find(query)
+        .limit(Number(limit))
+        .skip(Number(offset))
+        .sort({ createdAt: 'desc' })
+        .populate('author')
+        .exec(),
+      Article.count(query).exec(),
+      req.payload ? User.findById(req.payload.id) : null,
+    ])
+    .then(results => {
+      const [ articles, articlesCount, user ] = results;
+
+      return res.json({
+        articles: articles.map(article => article.toPublicJSON(user)),
+        count: articlesCount
+      });
     });
   })
   .catch(next);
