@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const router = require('express').Router();
 
 const User = mongoose.model('User');
+
 const auth = require('../auth');
 
 // Find the user whose username is specified in the URL

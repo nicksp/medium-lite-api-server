@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const passport = require('passport');
 const router = require('express').Router();
 
 const User = mongoose.model('User');
@@ -60,7 +59,8 @@ router.get('/', auth.optional, (req, res, next) => {
   Promise.all([
     req.query.author ? User.findOne({ username: req.query.author }) : null,
     req.query.favorited ? User.findOne({ username: req.query.favorited }) : null
-  ]).then(results => {
+  ])
+  .then(results => {
     const [ author, favoriter ] = results;
 
     if (author) {
@@ -171,7 +171,7 @@ router.put('/:article', auth.required, (req, res, next) => {
     .then(user => {
       // If we're the author of the updating article
       if (req.article.author._id.toString() === req.payload.id.toString()) {
-        const { title, body, description } = req.body.article;
+        const { title, body, description, tagList } = req.body.article;
 
         if (typeof title !== 'undefined') {
           req.article.title = title;
@@ -185,6 +185,10 @@ router.put('/:article', auth.required, (req, res, next) => {
           req.article.body = body;
         }
 
+        if (typeof tagList !== 'undefined') [
+          req.article.tagList = tagList;
+        ]
+
         req.article.save()
           .then(article => res.json({ article: article.toPublicJSON(user) }))
           .catch(next);
@@ -197,7 +201,11 @@ router.put('/:article', auth.required, (req, res, next) => {
 // Remove article
 router.delete('/:article', auth.required, (req, res, next) => {
   User.findById(req.payload.id)
-    .then(() => {
+    .then(user => {
+      if (!user) {
+        return res.sendStatus(401);
+      }
+
       // If we're the author of the article we're about to remove
       if (req.article.author._id.toString() === req.payload.id.toString()) {
         return req.article.remove()
@@ -205,7 +213,8 @@ router.delete('/:article', auth.required, (req, res, next) => {
       } else {
         return res.sendStatus(403);
       }
-    });
+    })
+    .catch(next);
 });
 
 // Favorite an article

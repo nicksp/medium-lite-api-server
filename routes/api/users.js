@@ -3,6 +3,7 @@ const router = require('express').Router();
 const passport = require('passport');
 
 const User = mongoose.model('User');
+
 const auth = require('../auth');
 
 // User registration
@@ -53,10 +54,12 @@ router.route('/user')
         if (!user) {
           return res.sendStatus(401);
         }
+
         return res.json({ user: user.toAuthJSON() });
       })
       .catch(next);
   })
+
   .put(auth.required, (req, res, next) => {
     User.findById(req.payload.id)
       .then(user => {

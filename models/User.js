@@ -61,7 +61,7 @@ UserSchema.methods.generateJwt = function () {
   return jwt.sign({
     id: this._id,
     username: this.username,
-    expiresAt: parseInt(expiresAt.getTime() / 1000)
+    exp: parseInt(expiresAt.getTime() / 1000)
   }, appSecret);
 };
 

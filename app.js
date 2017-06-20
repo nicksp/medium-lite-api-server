@@ -19,9 +19,6 @@ const db = mongoose.connection;
 
 // App configuration
 
-// Set static files location
-app.use(express.static(path.join(__dirname, 'public')));
-
 // Use body parser, so we can grab information from POST requests
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -89,7 +86,6 @@ if (!isProduction) {
     console.log(err.stack);
 
     res.status(err.status || 500);
-
     res.json({
       'errors': {
         message: err.message,
@@ -111,4 +107,4 @@ app.use((err, req, res, next) => {
 });
 
 // Start the server
-const server = app.listen(process.env.PORT || 2017, () => console.log(`Server running at http://localhost:${server.address().port}/`));
+const server = app.listen(process.env.PORT || 2017, () => console.log(`Server running at http://localhost:${server.address().port}`));
