@@ -185,9 +185,9 @@ router.put('/:article', auth.required, (req, res, next) => {
           req.article.body = body;
         }
 
-        if (typeof tagList !== 'undefined') [
+        if (typeof tagList !== 'undefined') {
           req.article.tagList = tagList;
-        ]
+        }
 
         req.article.save()
           .then(article => res.json({ article: article.toPublicJSON(user) }))
