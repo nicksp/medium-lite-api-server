@@ -23,7 +23,7 @@ const port = process.env.PORT || 2017;
 // App configuration
 
 // Configure our app to handle CORS requests
-app.use(cors());
+app.use(cors({ credentials: true, origin: true }));
 
 // Use body parser, so we can grab information from POST requests
 app.use(bodyParser.urlencoded({ extended: true }));
