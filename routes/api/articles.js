@@ -189,9 +189,9 @@ router.put('/:article', auth.required, (req, res, next) => {
           req.article.tagList = tagList;
         }
 
-        req.article.save()
-          .then(article => res.json({ article: article.toPublicJSON(user) }))
-          .catch(next);
+        req.article.save().then((article) => {
+          return res.json({ article: article.toPublicJSON(user) });
+        }).catch(next);
       } else {
         return res.sendStatus(403);
       }

@@ -24,6 +24,11 @@ const ArticleSchema = new mongoose.Schema({
 
 ArticleSchema.plugin(uniqueValidator, { message: 'is already taken.' });
 
+ArticleSchema.pre('validate', function (next) {
+  this.slugify();
+  next();
+});
+
 /**
  * Generate unique article slugs.
  */
@@ -60,10 +65,5 @@ ArticleSchema.methods.setFavoritesCount = function () {
       return article.save();
     });
 };
-
-ArticleSchema.pre('validate', (next) => {
-  this.slugify();
-  next();
-});
 
 mongoose.model('Article', ArticleSchema);
