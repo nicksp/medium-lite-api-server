@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Medium Lite Node.js API server",
   "main": "app.js",
+  "engines": {
+    "node": "8.0.0"
+  },
   "scripts": {
     "start": "node app",
     "dev": "nodemon app"
