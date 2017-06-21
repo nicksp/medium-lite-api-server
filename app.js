@@ -115,4 +115,4 @@ app.use((err, req, res, next) => {
 });
 
 // Start the server
-app.listen(port, host, () => console.log(`API server running at ${host}:${port}/api/`));
+app.listen(port, host, () => console.log(`API server running at ${host}:${port}/api`));

@@ -83,7 +83,7 @@ UserSchema.methods.getPublicProfile = function (user) {
   return {
     username: this.username,
     bio: this.bio,
-    image: this.image || 'http://static.domainname.com/images/anon.png',
+    image: this.image || 'https://medium-lite.herokuapp.com/assets/i/placeholder-user-anon.png',
     following: user ? user.isFollowing(this._id) : false
   }
 };
