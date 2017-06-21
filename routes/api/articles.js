@@ -88,7 +88,7 @@ router.get('/', auth.optional, (req, res, next) => {
 
       return res.json({
         articles: articles.map(article => article.toPublicJSON(user)),
-        count: articlesCount
+        articlesCount: articlesCount
       });
     });
   })
@@ -127,7 +127,7 @@ router.get('/feed', auth.required, (req, res, next) => {
 
         return res.json({
           articles: articles.map(article => article.toPublicJSON(user)),
-          count: articlesCount
+          articlesCount: articlesCount
         });
       })
       .catch(next);
