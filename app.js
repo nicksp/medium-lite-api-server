@@ -32,6 +32,8 @@ mongoose.Promise = global.Promise;
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+app.use('/assets', express.static(path.join(__dirname, 'public')));
+
 // Log all requests to the console
 app.use(morgan('dev'));
 
