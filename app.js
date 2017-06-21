@@ -89,7 +89,7 @@ if (!isProduction) {
 
     res.status(err.status || 500);
     res.json({
-      'errors': {
+      errors: {
         message: err.message,
         error: err
       }
@@ -101,7 +101,7 @@ if (!isProduction) {
 app.use((err, req, res, next) => {
   res.status(err.status || 500);
   res.json({
-    'errors': {
+    errors: {
       message: err.message,
       error: {}
     }
@@ -109,4 +109,4 @@ app.use((err, req, res, next) => {
 });
 
 // Start the server
-app.listen(port || 2017, () => console.log(`Server running at http://localhost:${port}`));
+app.listen(port, () => console.log(`Server running at http://localhost:${port}`));
