@@ -65,12 +65,12 @@ db.on('open', () => {
 });
 
 // Connect to our database
-if (isProduction) {
+// if (isProduction) {
   mongoose.connect(process.env.MONGODB_URI);
-} else {
-  mongoose.connect('mongodb://localhost/ledium');
-  mongoose.set('debug', true);
-}
+// } else {
+  // mongoose.connect('mongodb://localhost/ledium');
+  // mongoose.set('debug', true);
+// }
 
 // Models
 require('./models/User');
