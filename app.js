@@ -17,6 +17,8 @@ const isProduction = process.env.NODE_ENV === 'production';
 const app = express();
 const db = mongoose.connection;
 
+const port = process.env.PORT || 2017;
+
 // App configuration
 
 // Use body parser, so we can grab information from POST requests
@@ -107,4 +109,4 @@ app.use((err, req, res, next) => {
 });
 
 // Start the server
-const server = app.listen(process.env.PORT || 2017, () => console.log(`Server running at http://localhost:${server.address().port}`));
+app.listen(port || 2017, () => console.log(`Server running at http://localhost:${port}`));
