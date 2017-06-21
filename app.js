@@ -17,6 +17,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 const app = express();
 const db = mongoose.connection;
 
+const host = process.env.PORT ? '0.0.0.0' : '127.0.0.1';
 const port = process.env.PORT || 2017;
 
 // App configuration
@@ -109,4 +110,4 @@ app.use((err, req, res, next) => {
 });
 
 // Start the server
-app.listen(port, () => console.log(`Server running at http://localhost:${port}`));
+app.listen(port, host, () => console.log(`API server running at ${host}:${port}/api/`));
