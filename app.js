@@ -6,7 +6,6 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const session = require('express-session');
-const cors = require('cors');
 const passport = require('passport');
 const errorhandler = require('errorhandler');
 const mongoose = require('mongoose');
@@ -17,13 +16,23 @@ const isProduction = process.env.NODE_ENV === 'production';
 const app = express();
 const db = mongoose.connection;
 
-const host = process.env.PORT ? '0.0.0.0' : '127.0.0.1';
 const port = process.env.PORT || 2017;
+
+const allowCrossDomain = (req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+  res.header('Access-Control-Allow-Credentials', true);
+  next();
+};
 
 // App configuration
 
 // Configure our app to handle CORS requests
-app.use(cors({ credentials: true, origin: true }));
+app.use(allowCrossDomain);
+
+// Use native promises
+mongoose.Promise = global.Promise;
 
 // Use body parser, so we can grab information from POST requests
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -110,4 +119,4 @@ app.use((err, req, res, next) => {
 });
 
 // Start the server
-app.listen(port, host, () => console.log(`API server running at ${host}:${port}/api/`));
+app.listen(port, () => console.log(`API server listening on port: ${port}`));
