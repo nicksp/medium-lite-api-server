@@ -1,6 +1,7 @@
 const fs = require('fs');
 const http = require('http');
 const path = require('path');
+const cors = require('cors');
 const methods = require('methods');
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -16,20 +17,13 @@ const isProduction = process.env.NODE_ENV === 'production';
 const app = express();
 const db = mongoose.connection;
 
+const host = process.env.PORT ? '0.0.0.0' : '127.0.0.1';
 const port = process.env.PORT || 2017;
-
-const allowCrossDomain = (req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-  res.header('Access-Control-Allow-Credentials', true);
-  next();
-};
 
 // App configuration
 
 // Configure our app to handle CORS requests
-app.use(allowCrossDomain);
+app.use(cors());
 
 // Use native promises
 mongoose.Promise = global.Promise;
@@ -119,4 +113,4 @@ app.use((err, req, res, next) => {
 });
 
 // Start the server
-app.listen(port, () => console.log(`API server listening on port: ${port}`));
+app.listen(port, host, () => console.log(`API server running at ${host}:${port}/api/`));
