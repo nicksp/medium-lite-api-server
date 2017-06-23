@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const uniqueValidator = require('mongoose-unique-validator');
-const slug = require('slug');
+const slug = require('slugify');
 
 const User = mongoose.model('User');
 
@@ -25,7 +25,9 @@ const ArticleSchema = new mongoose.Schema({
 ArticleSchema.plugin(uniqueValidator, { message: 'is already taken.' });
 
 ArticleSchema.pre('validate', function (next) {
-  this.slugify();
+  if (!this.slug) {
+    this.slugify();
+  }
   next();
 });
 
