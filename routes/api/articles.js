@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const router = require('express').Router();
+const Promise = require('bluebird');
 
 const User = mongoose.model('User');
 const Article = mongoose.model('Article');
