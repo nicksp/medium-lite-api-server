@@ -52,7 +52,7 @@ ArticleSchema.methods.toPublicJSON = function (user) {
     tagList: this.tagList,
     favorited: user ? user.isFavorite(this._id) : false,
     favoritesCount: this.favoritesCount,
-    author: this.author.getPublicProfile(user)
+    author: this.author ? this.author.getPublicProfile(user) : { username: 'userRemoved' }
   };
 };
 
@@ -60,11 +60,10 @@ ArticleSchema.methods.toPublicJSON = function (user) {
  * Update an article's favorites count.
  */
 ArticleSchema.methods.setFavoritesCount = function () {
-  const article = this;
-  return User.count({ favorites: { $in: [article._id] }})
+  return User.count({ favorites: { $in: [this._id] }})
     .then(count => {
-      article.favoritesCount = count;
-      return article.save();
+      this.favoritesCount = count;
+      return this.save();
     });
 };
 

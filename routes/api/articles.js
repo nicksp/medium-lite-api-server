@@ -115,7 +115,7 @@ router.get('/feed', auth.required, (req, res, next) => {
         return res.sendStatus(401);
       }
 
-      Promise.all([
+      return Promise.all([
         Article.find({ author: { $in: user.following } })
           .limit(Number(limit))
           .skip(Number(offset))
@@ -306,7 +306,7 @@ router.get('/:article/comments', auth.optional, (req, res, next) => {
 });
 
 // Remove existing comment
-router.delete(':article/comments/:comment', auth.required, (req, res, next) => {
+router.delete('/:article/comments/:comment', auth.required, (req, res, next) => {
   if (req.comment.author.toString() === req.payload.id.toString()) {
     req.article.comments.remove(req.comment._id);
     req.article.save()

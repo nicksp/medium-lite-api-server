@@ -56,7 +56,7 @@ db.on('error', (error) => {
   throw new Error(error);
 });
 
-db.on('open', () => {
+db.once('open', () => {
   console.error('Mongoose connection: OPEN');
 });
 
