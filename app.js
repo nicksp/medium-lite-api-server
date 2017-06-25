@@ -101,18 +101,18 @@ if (!isProduction) {
       }
     });
   });
-}
-
-// Production error handler: no stacktraces leaked to user
-app.use((err, req, res, next) => {
-  res.status(err.status || 500);
-  res.json({
-    errors: {
-      message: err.message,
-      error: {}
-    }
+} else {
+  // Production error handler: no stacktraces leaked to user
+  app.use((err, req, res, next) => {
+    res.status(err.status || 500);
+    res.json({
+      errors: {
+        message: err.message,
+        error: {}
+      }
+    });
   });
-});
+}
 
 // Start the server
 app.listen(port, host, () => console.log(`API server running at ${host}:${port}/api`));

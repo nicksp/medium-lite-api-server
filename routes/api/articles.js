@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const router = require('express').Router();
-const Promise = require('bluebird');
 
 const User = mongoose.model('User');
 const Article = mongoose.model('Article');
@@ -123,9 +122,7 @@ router.get('/feed', auth.required, (req, res, next) => {
           .exec(),
         Article.count({ author: { $in: user.following } })
       ])
-      .then(results => {
-        const [ articles, articlesCount ] = results;
-
+      .then(([articles, articlesCount]) => {
         return res.json({
           articles: articles.map(article => article.toPublicJSON(user)),
           articlesCount
